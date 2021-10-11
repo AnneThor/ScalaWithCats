@@ -1,7 +1,14 @@
 package algebras
 
-trait Printable[A] {
+/* purpose of "self" is to distinguish inner/outer printables */
+trait Printable[A] { self =>
+
   def format(value: A): String
+  def contramap[B](f: B => A): Printable[B] =
+    new Printable[B] {
+      def format(value: B): String = self.format(f(value))
+    }
+
 }
 
 object PrintableInstances {
@@ -13,6 +20,12 @@ object PrintableInstances {
   implicit val intPrinter: Printable[Int] =
     new Printable[Int] {
       def format(value: Int): String = value.toString
+    }
+
+  implicit val boolPrinter: Printable[Boolean] =
+    new Printable[Boolean] {
+      def format(value: Boolean): String =
+        if (value) "yes" else "no"
     }
 }
 
